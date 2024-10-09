@@ -495,13 +495,25 @@ def main() -> None:  # pragma: no cover
     """
     # Get arguments
     args = get_arguments()
-
+    # Lecture du fichier et construction du graphe
+    kmer_dict = build_kmer_dict(args.fastq_file, args.kmer_size)
+    graph = build_graph(kmer_dict)
+    # Résolution des bulles
+    graph = simplify_bubbles(graph)
+    # Résolution des pointes d’entrée et de sortie
+    graph = solve_entry_tips(graph, get_starting_nodes(graph))
+    graph = solve_out_tips(graph, get_sink_nodes(graph))
+    # Ecriture du/des contigs
+    contigs = get_contigs(
+        graph, get_starting_nodes(graph), get_sink_nodes(graph)
+    )
+    save_contigs(contigs, args.output_file)
     # Fonctions de dessin du graphe
     # A decommenter si vous souhaitez visualiser un petit
     # graphe
     # Plot the graph
-    # if args.graphimg_file:
-    #     draw_graph(graph, args.graphimg_file)
+    if args.graphimg_file:
+        draw_graph(graph, args.graphimg_file)
 
 
 if __name__ == "__main__":  # pragma: no cover
