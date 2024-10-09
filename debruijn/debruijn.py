@@ -145,7 +145,12 @@ def build_kmer_dict(fastq_file: Path, kmer_size: int) -> Dict[str, int]:
     :param fastq_file: (str) Path to the fastq file.
     :return: A dictionnary object that identify all kmer occurrences.
     """
-    pass
+    kmer_dict = dict()
+    for read in read_fastq(fastq_file):
+        kmers = cut_kmer(read, kmer_size)
+        for kmer in kmers:
+            kmer_dict[kmer] = kmer_dict.get(kmer, 0) + 1
+    return kmer_dict
 
 
 def build_graph(kmer_dict: Dict[str, int]) -> DiGraph:
