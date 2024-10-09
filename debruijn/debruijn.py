@@ -36,6 +36,7 @@ import statistics
 import textwrap
 import matplotlib.pyplot as plt
 from typing import Iterator, Dict, List
+import itertools
 
 matplotlib.use("Agg")
 
@@ -275,7 +276,25 @@ def simplify_bubbles(graph: DiGraph) -> DiGraph:
     :param graph: (nx.DiGraph) A directed graph object
     :return: (nx.DiGraph) A directed graph object
     """
-    pass
+    is_bubble = False
+    node_n = None
+    for node in graph.nodes:
+        predecessors = list(graph.predecessors(node))
+        if len(predecessors) > 1:
+            for i, j in itertools.combinations(predecessors, 2):
+                ancestor_node = lowest_common_ancestor(graph, i, j)
+                if ancestor_node is not None:
+                    is_bubble = True
+                    node_n = node
+                    break
+        if is_bubble:
+            node_n = node
+            break
+    if is_bubble:
+        graph = simplify_bubbles(
+            solve_bubble(graph, ancestor_node, node_n)
+        )
+    return graph
 
 
 def solve_entry_tips(graph: DiGraph, starting_nodes: List[str]) -> DiGraph:
