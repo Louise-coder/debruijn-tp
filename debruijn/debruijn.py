@@ -13,30 +13,29 @@
 
 """Perform assembly based on debruijn graph."""
 
+import itertools
+import random
+from random import randint
+import statistics
+import textwrap
+from typing import Iterator, Dict, List
 import argparse
 import os
 import sys
 from pathlib import Path
+import matplotlib
+import matplotlib.pyplot as plt
+import networkx as nx
 from networkx import (
     DiGraph,
     all_simple_paths,
     lowest_common_ancestor,
     has_path,
     random_layout,
-    draw,
-    spring_layout,
 )
-import matplotlib
-from operator import itemgetter
-import random
+
 
 random.seed(9001)
-from random import randint
-import statistics
-import textwrap
-import matplotlib.pyplot as plt
-from typing import Iterator, Dict, List
-import itertools
 
 matplotlib.use("Agg")
 
@@ -76,7 +75,7 @@ def get_arguments():  # pragma: no cover
     """
     # Parsing arguments
     parser = argparse.ArgumentParser(
-        description=__doc__, usage="{0} -h".format(sys.argv[0])
+        description=__doc__, usage=f"{sys.argv[0]} -h"
     )
     parser.add_argument(
         "-i",
@@ -114,7 +113,7 @@ def read_fastq(fastq_file: Path) -> Iterator[str]:
     :param fastq_file: (Path) Path to the fastq file.
     :return: A generator object that iterate the read sequences.
     """
-    with open(fastq_file, "r") as file:
+    with open(fastq_file, "r", encoding="utf-8") as file:
         while True:
             try:
                 fastq_iter = iter(file)  # itérateur sur le fichier
@@ -144,7 +143,7 @@ def build_kmer_dict(fastq_file: Path, kmer_size: int) -> Dict[str, int]:
     :param fastq_file: (str) Path to the fastq file.
     :return: A dictionnary object that identify all kmer occurrences.
     """
-    kmer_dict = dict()
+    kmer_dict = {}
     for read in read_fastq(fastq_file):
         kmers = cut_kmer(read, kmer_size)
         for kmer in kmers:
@@ -446,7 +445,7 @@ def save_contigs(contigs_list: List[str], output_file: Path) -> None:
     :param contig_list: (list) List of [contiguous sequence and their length]
     :param output_file: (Path) Path to the output file
     """
-    with open(output_file, "w") as file:
+    with open(output_file, "w", encoding="utf-8") as file:
         for i, (contig, contig_size) in enumerate(contigs_list):
             file.write(f">contig_{i} len={contig_size}\n")
             file.write(f"{textwrap.fill(contig, width=80)}\n")
@@ -460,7 +459,7 @@ def draw_graph(
     :param graph: (nx.DiGraph) A directed graph object
     :param graphimg_file: (Path) Path to the output file
     """
-    fig, ax = plt.subplots()
+    _, _ = plt.subplots()
     elarge = [
         (u, v) for (u, v, d) in graph.edges(data=True) if d["weight"] > 3
     ]
@@ -471,7 +470,7 @@ def draw_graph(
     # print(elarge)
     # Draw the graph with networkx
     # pos=nx.spring_layout(graph)
-    pos = nx.random_layout(graph)
+    pos = random_layout(graph)
     nx.draw_networkx_nodes(graph, pos, node_size=6)
     nx.draw_networkx_edges(graph, pos, edgelist=elarge, width=6)
     nx.draw_networkx_edges(
