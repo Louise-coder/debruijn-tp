@@ -294,7 +294,12 @@ def get_starting_nodes(graph: DiGraph) -> List[str]:
     :param graph: (nx.DiGraph) A directed graph object
     :return: (list) A list of all nodes without predecessors
     """
-    pass
+    starting_nodes = []
+    for node in graph.nodes():
+        predecessors = graph.predecessors(node)
+        if not list(predecessors):
+            starting_nodes.append(node)
+    return starting_nodes
 
 
 def get_sink_nodes(graph: DiGraph) -> List[str]:
