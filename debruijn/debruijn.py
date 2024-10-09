@@ -256,7 +256,17 @@ def solve_bubble(
     :param descendant_node: (str) A downstream node in the graph
     :return: (nx.DiGraph) A directed graph object
     """
-    pass
+    path_list = list(
+        all_simple_paths(graph, ancestor_node, descendant_node)
+    )
+    path_length = [len(path) for path in path_list]
+    weight_avg_list = [
+        path_average_weight(graph, path) for path in path_list
+    ]
+    graph = select_best_path(
+        graph, path_list, path_length, weight_avg_list, False, False
+    )
+    return graph
 
 
 def simplify_bubbles(graph: DiGraph) -> DiGraph:
