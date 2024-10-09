@@ -39,13 +39,13 @@ from typing import Iterator, Dict, List
 
 matplotlib.use("Agg")
 
-__author__ = "Your Name"
+__author__ = "Louise LAM"
 __copyright__ = "Universite Paris Diderot"
-__credits__ = ["Your Name"]
+__credits__ = ["Louise LAM"]
 __license__ = "GPL"
 __version__ = "1.0.0"
-__maintainer__ = "Your Name"
-__email__ = "your@email.fr"
+__maintainer__ = "Louise LAM"
+__email__ = "louise.lam@etu.u-paris.fr"
 __status__ = "Developpement"
 
 
@@ -78,10 +78,18 @@ def get_arguments():  # pragma: no cover
         description=__doc__, usage="{0} -h".format(sys.argv[0])
     )
     parser.add_argument(
-        "-i", dest="fastq_file", type=isfile, required=True, help="Fastq file"
+        "-i",
+        dest="fastq_file",
+        type=isfile,
+        required=True,
+        help="Fastq file",
     )
     parser.add_argument(
-        "-k", dest="kmer_size", type=int, default=22, help="k-mer size (default 22)"
+        "-k",
+        dest="kmer_size",
+        type=int,
+        default=22,
+        help="k-mer size (default 22)",
     )
     parser.add_argument(
         "-o",
@@ -91,7 +99,10 @@ def get_arguments():  # pragma: no cover
         help="Output contigs in fasta file (default contigs.fasta)",
     )
     parser.add_argument(
-        "-f", dest="graphimg_file", type=Path, help="Save graph as an image (png)"
+        "-f",
+        dest="graphimg_file",
+        type=Path,
+        help="Save graph as an image (png)",
     )
     return parser.parse_args()
 
@@ -179,11 +190,16 @@ def path_average_weight(graph: DiGraph, path: List[str]) -> float:
     :return: (float) The average weight of a path
     """
     return statistics.mean(
-        [d["weight"] for (u, v, d) in graph.subgraph(path).edges(data=True)]
+        [
+            d["weight"]
+            for (u, v, d) in graph.subgraph(path).edges(data=True)
+        ]
     )
 
 
-def solve_bubble(graph: DiGraph, ancestor_node: str, descendant_node: str) -> DiGraph:
+def solve_bubble(
+    graph: DiGraph, ancestor_node: str, descendant_node: str
+) -> DiGraph:
     """Explore and solve bubble issue
 
     :param graph: (nx.DiGraph) A directed graph object
@@ -263,16 +279,22 @@ def save_contigs(contigs_list: List[str], output_file: Path) -> None:
     pass
 
 
-def draw_graph(graph: DiGraph, graphimg_file: Path) -> None:  # pragma: no cover
+def draw_graph(
+    graph: DiGraph, graphimg_file: Path
+) -> None:  # pragma: no cover
     """Draw the graph
 
     :param graph: (nx.DiGraph) A directed graph object
     :param graphimg_file: (Path) Path to the output file
     """
     fig, ax = plt.subplots()
-    elarge = [(u, v) for (u, v, d) in graph.edges(data=True) if d["weight"] > 3]
+    elarge = [
+        (u, v) for (u, v, d) in graph.edges(data=True) if d["weight"] > 3
+    ]
     # print(elarge)
-    esmall = [(u, v) for (u, v, d) in graph.edges(data=True) if d["weight"] <= 3]
+    esmall = [
+        (u, v) for (u, v, d) in graph.edges(data=True) if d["weight"] <= 3
+    ]
     # print(elarge)
     # Draw the graph with networkx
     # pos=nx.spring_layout(graph)
@@ -280,7 +302,13 @@ def draw_graph(graph: DiGraph, graphimg_file: Path) -> None:  # pragma: no cover
     nx.draw_networkx_nodes(graph, pos, node_size=6)
     nx.draw_networkx_edges(graph, pos, edgelist=elarge, width=6)
     nx.draw_networkx_edges(
-        graph, pos, edgelist=esmall, width=6, alpha=0.5, edge_color="b", style="dashed"
+        graph,
+        pos,
+        edgelist=esmall,
+        width=6,
+        alpha=0.5,
+        edge_color="b",
+        style="dashed",
     )
     # nx.draw_networkx(graph, pos, node_size=10, with_labels=False)
     # save image
