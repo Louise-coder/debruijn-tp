@@ -217,7 +217,6 @@ def select_best_path(
     :param delete_sink_node: (boolean) True->We remove the last node of a path
     :return: (nx.DiGraph) A directed graph object
     """
-    random.seed(9001)
     if statistics.stdev(weight_avg_list) > 0:
         index_best_path = weight_avg_list.index(max(weight_avg_list))
     elif statistics.stdev(path_length) > 0:
