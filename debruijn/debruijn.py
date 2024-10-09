@@ -342,7 +342,10 @@ def save_contigs(contigs_list: List[str], output_file: Path) -> None:
     :param contig_list: (list) List of [contiguous sequence and their length]
     :param output_file: (Path) Path to the output file
     """
-    pass
+    with open(output_file, "w") as file:
+        for i, (contig, contig_size) in enumerate(contigs_list):
+            file.write(f">contig_{i} len={contig_size}\n")
+            file.write(f"{textwrap.fill(contig, width=80)}\n")
 
 
 def draw_graph(
