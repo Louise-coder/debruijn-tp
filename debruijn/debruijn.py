@@ -370,7 +370,26 @@ def solve_out_tips(graph: DiGraph, ending_nodes: List[str]) -> DiGraph:
     :param ending_nodes: (list) A list of ending nodes
     :return: (nx.DiGraph) A directed graph object
     """
-    pass
+    is_tip = False
+    endings = []
+    common_node = None
+    for node in graph.nodes:
+        successors = list(graph.successors(node))
+        if len(successors) > 1:
+            for e_node in ending_nodes:
+                if has_path(graph, node, e_node):
+                    endings.append(e_node)
+            if len(endings) > 1:
+                is_tip = True
+                common_node = node
+                break
+    if is_tip:
+        new_graph = solve_tips(graph, common_node, endings, "ending")
+        graph = solve_entry_tips(
+            new_graph,
+            get_sink_nodes(new_graph),
+        )
+    return graph
 
 
 def get_starting_nodes(graph: DiGraph) -> List[str]:
