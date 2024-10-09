@@ -178,7 +178,25 @@ def remove_paths(
     :param delete_sink_node: (boolean) True->We remove the last node of a path
     :return: (nx.DiGraph) A directed graph object
     """
-    pass
+    for path in path_list:
+        path_size = len(path)
+        for i in range(path_size - 1):
+            node_u = path[i]
+            node_v = path[i + 1]
+            if graph.has_edge(node_u, node_v):
+                graph.remove_edge(node_u, node_v)
+        nodes_to_delete = []
+        if delete_entry_node and delete_sink_node:
+            nodes_to_delete = path
+        elif delete_entry_node:
+            nodes_to_delete = path[:-1]
+        elif delete_sink_node:
+            nodes_to_delete = path[1:]
+        else:
+            nodes_to_delete = path[1:-1]
+        for node in nodes_to_delete:
+            graph.remove_node(node)
+    return graph
 
 
 def select_best_path(
