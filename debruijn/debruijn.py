@@ -297,6 +297,43 @@ def simplify_bubbles(graph: DiGraph) -> DiGraph:
     return graph
 
 
+def solve_tips(
+    graph: DiGraph,
+    common_node: str,
+    tips: List[str],
+    tip_type: str,
+) -> DiGraph:
+    """Explore and solve tip issue.
+
+    :param graph: (nx.DiGraph) A directed graph object.
+    :param common_node: (str) The common node.
+    :param tips: (List[str]) A list of tip nodes to resolve.
+    :param tip_type: (str) Either "entry" or "ending".
+    """
+    path_list = []
+    if tip_type == "entry":
+        for tip in tips:
+            path_list += list(all_simple_paths(graph, tip, common_node))
+        delete_entry_node, delete_sink_node = True, False
+    else:
+        for tip in tips:
+            path_list += list(all_simple_paths(graph, common_node, tip))
+        delete_entry_node, delete_sink_node = False, True
+    path_length = [len(path) for path in path_list]
+    weight_avg_list = [
+        path_average_weight(graph, path) for path in path_list
+    ]
+    graph = select_best_path(
+        graph,
+        path_list,
+        path_length,
+        weight_avg_list,
+        delete_entry_node,
+        delete_sink_node,
+    )
+    return graph
+
+
 def solve_entry_tips(graph: DiGraph, starting_nodes: List[str]) -> DiGraph:
     """Remove entry tips
 
@@ -304,7 +341,26 @@ def solve_entry_tips(graph: DiGraph, starting_nodes: List[str]) -> DiGraph:
     :param starting_nodes: (list) A list of starting nodes
     :return: (nx.DiGraph) A directed graph object
     """
-    pass
+    is_tip = False
+    entries = []
+    common_node = None
+    for node in graph.nodes:
+        predecessors = list(graph.predecessors(node))
+        if len(predecessors) > 1:
+            for s_node in starting_nodes:
+                if has_path(graph, s_node, node):
+                    entries.append(s_node)
+            if len(entries) > 1:
+                is_tip = True
+                common_node = node
+                break
+    if is_tip:
+        new_graph = solve_tips(graph, common_node, entries, "entry")
+        graph = solve_entry_tips(
+            new_graph,
+            get_starting_nodes(new_graph),
+        )
+    return graph
 
 
 def solve_out_tips(graph: DiGraph, ending_nodes: List[str]) -> DiGraph:
