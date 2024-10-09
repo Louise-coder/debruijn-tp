@@ -116,9 +116,7 @@ def read_fastq(fastq_file: Path) -> Iterator[str]:
     with open(fastq_file, "r") as file:
         while True:
             try:
-                fastq_iter = iter(
-                    file
-                )  # Créer un itérateur sur le fichier
+                fastq_iter = iter(file)  # itérateur sur le fichier
                 next(fastq_iter)  # header
                 sequence = next(fastq_iter).strip()
                 next(fastq_iter)  # plus
